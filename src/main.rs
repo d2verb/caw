@@ -4,7 +4,11 @@ use clap::{AppSettings, Clap};
 use rusoto_logs::OutputLogEvent;
 
 #[derive(Clap)]
-#[clap(version = "0.0.1", author = "d2verb")]
+#[clap(
+    version = "0.0.1",
+    author = "d2verb",
+    about = "A tool to inspect cloudwatch logs"
+)]
 #[clap(setting = AppSettings::ColoredHelp)]
 struct Opts {
     #[clap(subcommand)]
@@ -13,25 +17,25 @@ struct Opts {
 
 #[derive(Clap)]
 enum SubCommand {
-    #[clap(version = "0.0.1", author = "d2verb")]
+    #[clap(about = "List log groups")]
     List(ListCommandArg),
 
-    #[clap(version = "0.0.1", author = "d2verb")]
+    #[clap(about = "Show log events")]
     Show(ShowCommandArg),
 }
 
 #[derive(Clap)]
 struct ListCommandArg {
-    #[clap(short = 'p', long)]
-    log_group_name_pat: Option<String>,
+    #[clap(short = 'p', long, about = "Log group name pattern")]
+    pattern: Option<String>,
 }
 
 #[derive(Clap)]
 struct ShowCommandArg {
     log_group_name: String,
 
-    #[clap(short = 'p', long)]
-    message_pat: Option<String>,
+    #[clap(short = 'p', long, about = "Message patternn")]
+    pattern: Option<String>,
 }
 
 #[tokio::main]
@@ -40,7 +44,7 @@ async fn main() {
 
     match opts.subcmd {
         SubCommand::List(arg) => {
-            let pat = match arg.log_group_name_pat {
+            let pat = match arg.pattern {
                 Some(s) => s,
                 None => "".to_string(),
             };
@@ -58,7 +62,7 @@ async fn main() {
         SubCommand::Show(arg) => {
             let log_group_name = arg.log_group_name;
 
-            let pat = match arg.message_pat {
+            let pat = match arg.pattern {
                 Some(s) => s,
                 None => "".to_string(),
             };
